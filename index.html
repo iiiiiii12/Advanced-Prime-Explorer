@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Prime Explorer & Number Genius</title>
+<style>
+    /* ===== Body & App Scrollable Styles ===== */
+    body, html {
+        margin:0; padding:0; width:100%; height:100%;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
+        color:white;
+        overflow: auto; /* allow scrolling if content is large */
+    }
+
+    #app {
+        display:none;
+        flex-direction:column;
+        align-items:center;
+        padding-top:40px;
+        width: 100%;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+
+    #results {
+        max-width:800px;
+        width:90%;
+        max-height:70vh; /* limits height */
+        margin:20px auto 0 auto;
+        text-align:center;
+        background: rgba(255,255,255,0.05);
+        padding:25px;
+        border-radius:15px;
+        box-shadow:0 0 30px rgba(255,255,255,0.2);
+        overflow-y: auto; /* scroll if content exceeds max height */
+        word-break: break-word;
+    }
+
+    /* ===== Floating Welcome Overlay ===== */
+    #welcomeOverlay {
+        position:fixed; top:0; left:0; width:100%; height:100%;
+        display:flex; justify-content:center; align-items:center;
+        flex-direction:column;
+        background: rgba(0,0,0,0.9);
+        z-index:10;
+        animation: fadeIn 1s ease forwards;
+    }
+
+    #welcomeOverlay h1 {
+        font-size:3rem;
+        color:#ff5f6d;
+        text-shadow:0 0 20px #ffcf5c, 0 0 40px #ff5f6d;
+        margin-bottom:20px;
+        animation: floatText 3s ease-in-out infinite alternate;
+    }
+
+    #welcomeOverlay p {
+        font-size:1.2rem;
+        color:#ffd700;
+        margin-bottom:30px;
+        text-align:center;
+        max-width:600px;
+        line-height:1.5;
+        animation: floatText 3s ease-in-out infinite alternate-reverse;
+    }
+
+    #enterBtn {
+        padding:15px 30px;
+        font-size:1.5rem;
+        border-radius:50px;
+        border:none;
+        background: linear-gradient(45deg,#ff5f6d,#ffc371);
+        color:white;
+        cursor:pointer;
+        box-shadow: 0 0 20px rgba(255,95,109,0.7);
+        transition:0.3s;
+    }
+
+    #enterBtn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 40px rgba(255,95,109,0.9);
+    }
+
+    @keyframes floatText {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-15px); }
+    }
+
+    @keyframes fadeIn {
+        0% { opacity:0; }
+        100% { opacity:1; }
+    }
+
+    /* ===== Main App Styles ===== */
+    h1.main-title {
+        color:#ffcf5c;
+        text-shadow:0 0 10px #ffcf5c;
+        margin-bottom:20px;
+        text-align:center;
+    }
+
+    input, button {
+        padding:10px;
+        font-size:1.2rem;
+        border-radius:10px;
+        border:none;
+        margin-bottom:15px;
+        display:block;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    button#computeBtn {
+        cursor:pointer;
+        background:linear-gradient(45deg,#ff5f6d,#ffc371);
+        color:white;
+        box-shadow:0 0 10px rgba(255,95,109,0.6);
+        transition:0.3s;
+    }
+
+    button#computeBtn:hover {
+        transform:scale(1.05);
+        box-shadow:0 0 20px rgba(255,95,109,0.8);
+    }
+
+    .result-line {
+        margin:10px 0;
+        font-size:1.1rem;
+    }
+
+    .coprime-number, .special-number {
+        display:inline-block;
+        margin:2px 4px;
+        padding:5px 7px;
+        border-radius:5px;
+        background:#ffcf5c;
+        color:#000;
+        font-weight:bold;
+        transition:0.3s;
+    }
+
+    .coprime-number:hover, .special-number:hover {
+        background:#fff;
+        transform:scale(1.2);
+    }
+
+    footer {
+        position:fixed;
+        bottom:10px;
+        width:100%;
+        font-size:0.8rem;
+        color:rgba(255,255,255,0.5);
+        text-align:center;
+    }
+
+    /* ===== Floating particles ===== */
+    .particle {
+        position:absolute;
+        width:6px;
+        height:6px;
+        border-radius:50%;
+        background: rgba(255,255,255,0.6);
+        animation: floatParticle 10s linear infinite;
+    }
+
+    @keyframes floatParticle {
+        0% { transform: translateY(0) translateX(0); opacity:1;}
+        50% { transform: translateY(-100px) translateX(50px); opacity:0.5;}
+        100% { transform: translateY(-200px) translateX(0); opacity:0;}
+    }
+</style>
+</head>
+<body>
+
+<!-- Floating Welcome Overlay -->
+<div id="welcomeOverlay">
+    <h1>Welcome to Advanced Prime Explorer</h1>
+    <p>Discover prime numbers, coprimes, perfect powers, and more! <br>Enter a number in the next screen to see its magic unfold.</p>
+    <button id="enterBtn">Enter</button>
+</div>
+
+<!-- Floating Particles -->
+<script>
+    for(let i=0;i<50;i++){
+        let particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = Math.random()*100 + 'vw';
+        particle.style.top = Math.random()*100 + 'vh';
+        particle.style.animationDelay = Math.random()*5 + 's';
+        particle.style.background = `hsl(${Math.random()*360}, 100%, 75%)`;
+        document.body.appendChild(particle);
+    }
+</script>
+
+<!-- Main App -->
+<div id="app">
+    <h1 class="main-title">Advanced Prime Explorer & Number Genius</h1>
+    <input type="number" id="numberInput" placeholder="Enter a positive integer"/>
+    <button id="computeBtn">Compute</button>
+    <div id="results"></div>
+    <footer>Made by Isija Anusara</footer>
+</div>
+
+<script>
+    // ========================
+    // Enter Button
+    // ========================
+    const welcomeOverlay = document.getElementById('welcomeOverlay');
+    const enterBtn = document.getElementById('enterBtn');
+    const app = document.getElementById('app');
+
+    enterBtn.addEventListener('click', () => {
+        welcomeOverlay.style.display = 'none';
+        app.style.display = 'flex';
+    });
+
+    // ========================
+    // Number Theory Functions
+    // ========================
+    function isPrime(n){ if(n<2) return false; for(let i=2;i<=Math.sqrt(n);i++) if(n%i===0) return false; return true;}
+    function gcd(a,b){ return b===0?a:gcd(b,a%b);}
+    function coprimes(n){ let res=[]; for(let i=1;i<=n;i++) if(gcd(i,n)===1) res.push(i); return res;}
+    function primeFactors(n){ let factors=[],d=2; while(n>1){ while(n%d===0){ factors.push(d); n/=d;} d++; if(d*d>n){if(n>1) factors.push(n); break;}} return factors;}
+    function eulerTotient(n){ let count=0; for(let i=1;i<=n;i++) if(gcd(i,n)===1) count++; return count;}
+    function largestPrimeFactor(n){ let factors=primeFactors(n); return factors.length?Math.max(...factors):null;}
+    function sumOfDivisors(n){ let sum=0; for(let i=1;i<=n;i++) if(n%i===0) sum+=i; return sum;}
+    function productOfDivisors(n){ let prod=1; for(let i=1;i<=n;i++) if(n%i===0) prod*=i; return prod;}
+    function isPerfectPower(n){ for(let b=2;b<=Math.log2(n)+1;b++){ let a=Math.round(Math.pow(n,1/b)); if(Math.pow(a,b)===n) return `${a}^${b}`;} return false;}
+    function classifyNumber(n){ let sum=sumOfDivisors(n)-n; if(sum===n) return "Perfect"; else if(sum>n) return "Abundant"; else return "Deficient";}
+    function primesBelow(n){ let res=[]; for(let i=2;i<n;i++) if(isPrime(i)) res.push(i); return res;}
+
+    // ========================
+    // UI & Computation
+    // ========================
+    const input=document.getElementById('numberInput');
+    const btn=document.getElementById('computeBtn');
+    const results=document.getElementById('results');
+
+    btn.addEventListener('click',()=>{
+        const n=parseInt(input.value);
+        if(!n||n<=0){ results.innerHTML="<div class='result-line'>Please enter a positive integer!</div>"; return;}
+        let html="";
+        html+=`<div class="result-line"><strong>Number:</strong> ${n}</div>`;
+        html+=`<div class="result-line"><strong>Prime:</strong> ${isPrime(n)?"✅ Yes":"❌ No"}</div>`;
+        html+=`<div class="result-line"><strong>Prime Factors:</strong> ${primeFactors(n).join(", ")}</div>`;
+        html+=`<div class="result-line"><strong>Largest Prime Factor:</strong> ${largestPrimeFactor(n)}</div>`;
+        html+=`<div class="result-line"><strong>Euler's Totient φ(n):</strong> ${eulerTotient(n)}</div>`;
+        let pp=isPerfectPower(n); html+=`<div class="result-line"><strong>Perfect Power:</strong> ${pp?pp:"❌ No"}</div>`;
+        html+=`<div class="result-line"><strong>Number Classification:</strong> ${classifyNumber(n)}</div>`;
+        html+=`<div class="result-line"><strong>Coprime Numbers:</strong><br>`; coprimes(n).forEach(c=>{ html+=`<span class="coprime-number">${c}</span>`}); html+="</div>";
+        html+=`<div class="result-line"><strong>Sum of Divisors:</strong> ${sumOfDivisors(n)}</div>`;
+        html+=`<div class="result-line"><strong>Product of Divisors:</strong> ${productOfDivisors(n)}</div>`;
+        html+=`<div class="result-line"><strong>Primes below number:</strong><br>`; primesBelow(n).forEach(p=>{ html+=`<span class="special-number">${p}</span>`}); html+="</div>";
+        results.innerHTML=html;
+    });
+</script>
+
+</body>
+</html>
